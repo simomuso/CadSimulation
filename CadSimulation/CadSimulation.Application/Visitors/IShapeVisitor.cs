@@ -1,7 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using CadSimulation.Application.Models;
 
-internal interface IShapeVisitor
+public interface IShapeVisitor
 {
     void Visit(Circle circle);
     void Visit(Rectangle rectangle);

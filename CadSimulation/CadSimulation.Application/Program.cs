@@ -3,12 +3,11 @@ using CadSimulation.Application.Models;
 using CadSimulation.Application.Repositories;
 using Newtonsoft.Json;
 
+var options = ParseCommandLineArguments(args);
 
-var arguments = ParseCommandLineArguments(args);
+Console.WriteLine($"Running configuration: {JsonConvert.SerializeObject(options)}");
 
-Console.WriteLine($"Running configuration: {JsonConvert.SerializeObject(arguments)}");
-
-var shapesRepository = new ShapesRepositoryFactory().CreateShapesRepository(arguments.FilesystemPath, arguments.JsonFormatRequired);
+var persistanceStrategy = new PersistanceStrategySelector().SelectStrategy(options);
 var shapes = new List<IShape>();
 
 while (true)
@@ -80,19 +79,19 @@ while (true)
             }
             continue;
         case 'k':
-            await shapesRepository.SaveAllAsync(shapes);
+            await persistanceStrategy.ExecuteWriteAsync(shapes);
             continue;
         case 'w':
-            shapes = (await shapesRepository.GetAllAsync()).ToList();
+            shapes = (await persistanceStrategy.ExecuteReadAsync()).ToList();
             continue;
     }
     shapes.Add(shape!);
 
 }
 
-static CommandLineArguments ParseCommandLineArguments(string[] args)
+static ApplicationOptions ParseCommandLineArguments(string[] args)
 {
-    var commandLineArguments = new CommandLineArguments();
+    var commandLineArguments = new ApplicationOptions();
 
     for (int i = 0; i < args.Length; i++)
     {
@@ -103,7 +102,11 @@ static CommandLineArguments ParseCommandLineArguments(string[] args)
                     commandLineArguments.FilesystemPath = args[i + 1];
                 continue;
             case "--json":
-                commandLineArguments.JsonFormatRequired = true;
+                commandLineArguments.UseJsonFormat = true;
+                continue;
+            case "--uri":
+                if (i + 1 < args.Length)
+                    commandLineArguments.ServiceUri = new Uri(args[i + 1]);
                 continue;
         }
     }

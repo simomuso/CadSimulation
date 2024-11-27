@@ -1,9 +1,9 @@
 ﻿// See https://aka.ms/new-console-template for more information
 namespace CadSimulation.Application.Models
 {
-    internal class Square : IShape
+    public class Square : IShape
     {
-        internal int Side { get; }
+        public int Side { get; }
 
         public Square(int side)
         {

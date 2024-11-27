@@ -1,9 +1,9 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using CadSimulation.Application.Models;
 
-internal class CustomShapeFormatter : IShapeVisitor
+public class CustomShapeFormatter : IShapeVisitor
 {
-    internal string FormattedValue { get; private set; } = null!;
+    public string FormattedValue { get; private set; } = null!;
 
     public void Visit(Circle circle)
     {

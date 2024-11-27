@@ -1,9 +1,9 @@
 ﻿// See https://aka.ms/new-console-template for more information
 namespace CadSimulation.Application.Models
 {
-    internal class Circle : IShape
+    public class Circle : IShape
     {
-        internal int Radius { get; }
+        public int Radius { get; }
 
         public Circle(int radius)
         {

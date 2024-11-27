@@ -2,9 +2,9 @@
 using CadSimulation.Application.Models;
 using CadSimulation.Application.Models.Json;
 
-internal class JsonShapeFormatter : IShapeVisitor
+public class JsonShapeFormatter : IShapeVisitor
 {
-    internal ISerializableShape FormattedValue { get; private set; } = null!;
+    public ISerializableShape FormattedValue { get; private set; } = null!;
 
     public void Visit(Circle circle)
     {

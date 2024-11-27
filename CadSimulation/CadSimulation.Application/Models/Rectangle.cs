@@ -1,10 +1,10 @@
 ﻿// See https://aka.ms/new-console-template for more information
 namespace CadSimulation.Application.Models
 {
-    internal class Rectangle : IShape
+    public class Rectangle : IShape
     {
-        internal int Height { get; }
-        internal int Width { get; }
+        public int Height { get; }
+        public int Width { get; }
 
         public Rectangle(int height, int witdh)
         {

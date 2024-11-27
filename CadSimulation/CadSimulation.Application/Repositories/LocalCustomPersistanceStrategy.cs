@@ -2,16 +2,16 @@
 
 namespace CadSimulation.Application.Repositories
 {
-    internal class CustomShapesRepository : IShapesRepository
+    public class LocalCustomPersistanceStrategy : IPersistanceStrategy
     {
         private readonly string _filePath;
 
-        internal CustomShapesRepository(string filePath) 
+        public LocalCustomPersistanceStrategy(string filePath) 
         {
             _filePath = filePath;
         }
 
-        public async Task<IEnumerable<IShape>> GetAllAsync()
+        public async Task<IEnumerable<IShape>> ExecuteReadAsync()
         {
             var shapes = new List<IShape>();
 
@@ -45,7 +45,7 @@ namespace CadSimulation.Application.Repositories
             return shapes;
         }
 
-        public async Task SaveAllAsync(IEnumerable<IShape> shapes)
+        public async Task ExecuteWriteAsync(IEnumerable<IShape> shapes)
         {
             var lines = new List<string>();
             foreach (var shape in shapes)

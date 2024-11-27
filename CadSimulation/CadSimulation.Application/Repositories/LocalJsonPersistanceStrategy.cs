@@ -7,16 +7,16 @@ using System;
 
 namespace CadSimulation.Application.Repositories
 {
-    internal class JsonShapesRepository : IShapesRepository
+    public class LocalJsonPersistanceStrategy : IPersistanceStrategy
     {
         private readonly string _filePath;
 
-        public JsonShapesRepository(string filePath)
+        public LocalJsonPersistanceStrategy(string filePath)
         {
             _filePath = filePath;
         }
 
-        public async Task<IEnumerable<IShape>> GetAllAsync()
+        public async Task<IEnumerable<IShape>> ExecuteReadAsync()
         {
             var shapes = new List<IShape>();
             var fileContent = await File.ReadAllTextAsync(_filePath);
@@ -30,7 +30,7 @@ namespace CadSimulation.Application.Repositories
             return shapes;
         }
 
-        public async Task SaveAllAsync(IEnumerable<IShape> shapes)
+        public async Task ExecuteWriteAsync(IEnumerable<IShape> shapes)
         {
             var shapesToSerialize = new List<ISerializableShape>();
             foreach(var shape in shapes)
