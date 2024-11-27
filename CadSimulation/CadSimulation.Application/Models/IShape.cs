@@ -5,7 +5,6 @@ namespace CadSimulation.Application.Models
     {
         void descr();
         double area();
-
-        void Accept(IFilesystemShapeSerializerVisitor visitor);
+        void Accept(IShapeVisitor visitor);
     }
 }

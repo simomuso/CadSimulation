@@ -10,11 +10,6 @@ namespace CadSimulation.Application.Models
             Side = side;
         }
 
-        public void Accept(IFilesystemShapeSerializerVisitor visitor)
-        {
-            visitor.Visit(this);
-        }
-
         double IShape.area()
         {
             return Side * Side;
@@ -23,6 +18,10 @@ namespace CadSimulation.Application.Models
         void IShape.descr()
         {
             Console.WriteLine($"Square, side: {Side}");
+        }
+        public void Accept(IShapeVisitor visitor)
+        {
+            visitor.Visit(this);
         }
     }
 }

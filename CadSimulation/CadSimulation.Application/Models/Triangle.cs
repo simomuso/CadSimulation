@@ -11,10 +11,6 @@ namespace CadSimulation.Application.Models
             Base = b;
             Height = h;
         }
-        public void Accept(IFilesystemShapeSerializerVisitor visitor)
-        {
-            visitor.Visit(this);
-        }
 
         double IShape.area()
         {
@@ -23,6 +19,10 @@ namespace CadSimulation.Application.Models
         void IShape.descr()
         {
             Console.WriteLine($"Triangle, base: {Base}, height: {Height}");
+        }
+        public void Accept(IShapeVisitor visitor)
+        {
+            visitor.Visit(this);
         }
     }
 }
