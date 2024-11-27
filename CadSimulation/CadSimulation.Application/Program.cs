@@ -1,12 +1,14 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using CadSimulation.Application.Models;
+using CadSimulation.Application.Repositories;
+using Newtonsoft.Json;
 
 
 var arguments = ParseCommandLineArguments(args);
 
-Console.WriteLine($"PersistenceLocalDestinationPath={arguments?.FilesystemPath}");
+Console.WriteLine($"Running configuration: {JsonConvert.SerializeObject(arguments)}");
 
-
+var shapesRepository = new ShapesRepositoryFactory().CreateShapesRepository(arguments.FilesystemPath, arguments.JsonFormatRequired);
 var shapes = new List<IShape>();
 
 while (true)
@@ -78,10 +80,10 @@ while (true)
             }
             continue;
         case 'k':
-            await SerializeShapesToFilesystemAsync(shapes, arguments?.FilesystemPath);
+            await shapesRepository.SaveAllAsync(shapes);
             continue;
         case 'w':
-            shapes = (await DeserializeShapesFromFilesystemAsync(arguments?.FilesystemPath)).ToList();
+            shapes = (await shapesRepository.GetAllAsync()).ToList();
             continue;
     }
     shapes.Add(shape!);
@@ -99,68 +101,12 @@ static CommandLineArguments ParseCommandLineArguments(string[] args)
             case "--path":
                 if (i + 1 < args.Length)
                     commandLineArguments.FilesystemPath = args[i + 1];
-                break;
+                continue;
+            case "--json":
+                commandLineArguments.JsonFormatRequired = true;
+                continue;
         }
     }
 
     return commandLineArguments;
-}
-
-static async Task SerializeShapesToFilesystemAsync(IEnumerable<IShape> shapes, string? destinationPath)
-{
-    if (string.IsNullOrWhiteSpace(destinationPath))
-    {
-        Console.WriteLine("Invalid filesystem destination path");
-        return;
-    }
-
-    var lines = new List<string>();
-    foreach(var shape in shapes)
-    {
-        var formattedValueVisitor = new FilesystemShapeSerializer();
-        shape.Accept(formattedValueVisitor);
-        lines.Add(formattedValueVisitor.SerializedValue);
-    }
-
-    await File.WriteAllLinesAsync(destinationPath, lines);
-    Console.WriteLine("Shapes persisted to filesystem");
-}
-
-
-static async Task<IEnumerable<IShape>> DeserializeShapesFromFilesystemAsync(string? filesystemPath)
-{
-    if (string.IsNullOrWhiteSpace(filesystemPath) || !File.Exists(filesystemPath))
-        return new List<IShape>();
-
-    var shapes = new List<IShape>();
-
-    var lines = await File.ReadAllLinesAsync(filesystemPath);
-    foreach (var line in lines)
-    {
-        var lineItems = line.Split(' ');
-        switch (lineItems[0])
-        {
-            case "S":
-                var side = int.Parse(lineItems[1]);
-                shapes.Add(new Square(side));
-                break;
-            case "R":
-                var rWidth = int.Parse(lineItems[1]);
-                var rHeight = int.Parse(lineItems[2]);
-                shapes.Add(new Rectangle(rHeight, rWidth));
-                break;
-            case "T":
-                var tBase = int.Parse(lineItems[1]);
-                var tHeight = int.Parse(lineItems[2]);
-                shapes.Add(new Triangle(tBase, tHeight));
-                break;
-            case "C":
-                var radius = int.Parse(lineItems[1]);
-                shapes.Add(new Circle(radius));
-                break;
-        }
-    }
-
-    Console.WriteLine("Shapes loaded from filesystem");
-    return shapes;
 }

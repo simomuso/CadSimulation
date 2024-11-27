@@ -2,4 +2,5 @@
 internal class CommandLineArguments
 {
     public string FilesystemPath { get; set; } = null!;
+    public bool JsonFormatRequired { get; set; }
 }

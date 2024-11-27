@@ -12,11 +12,6 @@ namespace CadSimulation.Application.Models
             Width = witdh;
         }
 
-        public void Accept(IFilesystemShapeSerializerVisitor visitor)
-        {
-            visitor.Visit(this);
-        }
-
         double IShape.area()
         {
             return Height * Width;
@@ -25,6 +20,10 @@ namespace CadSimulation.Application.Models
         void IShape.descr()
         {
             Console.WriteLine($"Rectangle, height: {Height}, width: {Width}");
+        }
+        public void Accept(IShapeVisitor visitor)
+        {
+            visitor.Visit(this);
         }
     }
 }

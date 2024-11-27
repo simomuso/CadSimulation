@@ -9,10 +9,6 @@ namespace CadSimulation.Application.Models
         {
             Radius = radius;
         }
-        public void Accept(IFilesystemShapeSerializerVisitor visitor)
-        {
-            visitor.Visit(this);
-        }
 
         double IShape.area()
         {
@@ -22,6 +18,11 @@ namespace CadSimulation.Application.Models
         void IShape.descr()
         {
             Console.WriteLine($"Circle, radius: {Radius}");
+        }
+
+        public void Accept(IShapeVisitor visitor)
+        {
+            visitor.Visit(this);
         }
     }
 }
