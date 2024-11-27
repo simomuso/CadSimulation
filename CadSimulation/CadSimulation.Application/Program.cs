@@ -1,7 +1,13 @@
 ﻿// See https://aka.ms/new-console-template for more information
-using CadSimulation;
+using CadSimulation.Application.Models;
 
-List<Shape> shapes = new List<Shape>();
+
+var arguments = ParseCommandLineArguments(args);
+
+Console.WriteLine($"PersistenceLocalDestinationPath={arguments?.FilesystemPath}");
+
+
+var shapes = new List<IShape>();
 
 while (true)
 {
@@ -13,13 +19,15 @@ while (true)
 "   'r': insert a rectangle\n" +
 "   'l': list all inserted shapes\n" +
 "   'a': all shapres total area\n" +
+"   'k': persist data on filesystem\n" +
+"   'w': load data from filesystem\n" +
 "   'q': quit");
 
     var k = Console.ReadKey(true);
     if (k.KeyChar == 'q')
         break;
 
-    Shape? shape = null;
+    IShape? shape = null;
     switch (k.KeyChar)
     {
         case 'l':
@@ -39,20 +47,20 @@ while (true)
             break;
         case 'r':
             {
-                Console.WriteLine("Rectangle.\nValue for hight:\t");
-                var hight = Int32.Parse(Console.ReadLine()!);
-                Console.WriteLine("value for weidth:\t");
-                var weidth = Int32.Parse(Console.ReadLine()!);
-                shape = new Rectangle(hight, weidth); // Console.WriteLine("Rectangle");
+                Console.WriteLine("Rectangle.\nValue for height:\t");
+                var height = Int32.Parse(Console.ReadLine()!);
+                Console.WriteLine("value for width:\t");
+                var witdh = Int32.Parse(Console.ReadLine()!);
+                shape = new Rectangle(height, witdh); // Console.WriteLine("Rectangle");
             }
             break;
         case 't':
             {
-                Console.WriteLine("Triangle.\nValue for hight:\t");
-                var hight = Int32.Parse(Console.ReadLine()!);
+                Console.WriteLine("Triangle.\nValue for height:\t");
+                var height = Int32.Parse(Console.ReadLine()!);
                 Console.WriteLine("value for base:\t");
-                var weidth = Int32.Parse(Console.ReadLine()!);
-                shape = new Triangle(hight, weidth); // Console.WriteLine("Triangle");
+                var tBase = Int32.Parse(Console.ReadLine()!);
+                shape = new Triangle(tBase, height); // Console.WriteLine("Triangle");
             }
             break;
         case 'c':
@@ -69,88 +77,90 @@ while (true)
                 Console.WriteLine("Total area: {0}", area);
             }
             continue;
+        case 'k':
+            await SerializeShapesToFilesystemAsync(shapes, arguments?.FilesystemPath);
+            continue;
+        case 'w':
+            shapes = (await DeserializeShapesFromFilesystemAsync(arguments?.FilesystemPath)).ToList();
+            continue;
     }
     shapes.Add(shape!);
 
 }
 
-namespace CadSimulation
+static CommandLineArguments ParseCommandLineArguments(string[] args)
 {
-    internal interface Shape
-    {
-        void descr();
-        double area();
-    }
-    internal class Square : Shape
-    {
-        readonly int _side;
-        public Square(int side)
-        {
-            _side = side;
-        }
-        double Shape.area()
-        {
-            return _side * _side;
-        }
+    var commandLineArguments = new CommandLineArguments();
 
-        void Shape.descr()
-        {
-            Console.WriteLine($"Square, side: {_side}");
-        }
-    }
-    internal class Rectangle : Shape
+    for (int i = 0; i < args.Length; i++)
     {
-        readonly int _height;
-        readonly int _weidth;
-        public Rectangle(int height, int weidth)
+        switch (args[i])
         {
-            _height = height;
-            _weidth = weidth;
-        }
-        double Shape.area()
-        {
-            return _height * _weidth;
-        }
-
-        void Shape.descr()
-        {
-            Console.WriteLine($"Rectangle, height: {_height}, weidth: {_weidth}");
+            case "--path":
+                if (i + 1 < args.Length)
+                    commandLineArguments.FilesystemPath = args[i + 1];
+                break;
         }
     }
-    internal class Circle : Shape
+
+    return commandLineArguments;
+}
+
+static async Task SerializeShapesToFilesystemAsync(IEnumerable<IShape> shapes, string? destinationPath)
+{
+    if (string.IsNullOrWhiteSpace(destinationPath))
     {
-        int _radius;
-        public Circle(int radius)
-        {
-            _radius = radius;
-        }
-
-        double Shape.area()
-        {
-            return _radius * _radius * 3.1416;
-        }
-
-        void Shape.descr()
-        {
-            Console.WriteLine($"Circle, radius: {_radius}");
-        }
+        Console.WriteLine("Invalid filesystem destination path");
+        return;
     }
-    internal class Triangle : Shape
+
+    var lines = new List<string>();
+    foreach(var shape in shapes)
     {
-        int _base;
-        int _height;
-        public Triangle(int b, int h)
+        var formattedValueVisitor = new FilesystemShapeSerializer();
+        shape.Accept(formattedValueVisitor);
+        lines.Add(formattedValueVisitor.SerializedValue);
+    }
+
+    await File.WriteAllLinesAsync(destinationPath, lines);
+    Console.WriteLine("Shapes persisted to filesystem");
+}
+
+
+static async Task<IEnumerable<IShape>> DeserializeShapesFromFilesystemAsync(string? filesystemPath)
+{
+    if (string.IsNullOrWhiteSpace(filesystemPath) || !File.Exists(filesystemPath))
+        return new List<IShape>();
+
+    var shapes = new List<IShape>();
+
+    var lines = await File.ReadAllLinesAsync(filesystemPath);
+    foreach (var line in lines)
+    {
+        var lineItems = line.Split(' ');
+        switch (lineItems[0])
         {
-            _base = b;
-            _height = h;
-        }
-        double Shape.area()
-        {
-            return _base * _height / 2;
-        }
-        void Shape.descr()
-        {
-            Console.WriteLine($"Triangle, base: {_base}, height: {_height}");
+            case "S":
+                var side = int.Parse(lineItems[1]);
+                shapes.Add(new Square(side));
+                break;
+            case "R":
+                var rWidth = int.Parse(lineItems[1]);
+                var rHeight = int.Parse(lineItems[2]);
+                shapes.Add(new Rectangle(rHeight, rWidth));
+                break;
+            case "T":
+                var tBase = int.Parse(lineItems[1]);
+                var tHeight = int.Parse(lineItems[2]);
+                shapes.Add(new Triangle(tBase, tHeight));
+                break;
+            case "C":
+                var radius = int.Parse(lineItems[1]);
+                shapes.Add(new Circle(radius));
+                break;
         }
     }
+
+    Console.WriteLine("Shapes loaded from filesystem");
+    return shapes;
 }
