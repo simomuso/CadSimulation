@@ -1,19 +1,22 @@
 ﻿using CadSimulation.Application.Models;
 using CadSimulation.Application.Models.Json;
-using CadSimulation.Application.Repositories;
 using CadSimulation.Application.Visitors;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace CadSimulation.Application
+namespace CadSimulation.Application.Serialization
 {
-    public class Mappers
+    public interface IShapeFormatMapper
     {
-        public static IEnumerable<IShape> MapFromJsonFormat(string shapes)
+        IEnumerable<IShape> MapFromCustomFormat(string shapes);
+        IEnumerable<IShape> MapFromJsonFormat(string shapes);
+        string MapToCustomFormat(IEnumerable<IShape> shapes);
+        string MapToJsonFormat(IEnumerable<IShape> shapes);
+    }
+
+    public class ShapeFormatMapper : IShapeFormatMapper
+    {
+        public IEnumerable<IShape> MapFromJsonFormat(string shapes)
         {
             var result = new List<IShape>();
             var serializableShapes = JsonConvert.DeserializeObject<IEnumerable<ISerializableShape>>(shapes, new ShapeConverter());
@@ -26,7 +29,7 @@ namespace CadSimulation.Application
             return result;
         }
 
-        public static string MapToJsonFormat(IEnumerable<IShape> shapes)
+        public string MapToJsonFormat(IEnumerable<IShape> shapes)
         {
             var shapesToSerialize = new List<ISerializableShape>();
             foreach (var shape in shapes)
@@ -39,7 +42,7 @@ namespace CadSimulation.Application
             return JsonConvert.SerializeObject(shapesToSerialize);
         }
 
-        public static IEnumerable<IShape> MapFromCustomFormat(string shapes)
+        public IEnumerable<IShape> MapFromCustomFormat(string shapes)
         {
             var result = new List<IShape>();
             using var reader = new StringReader(shapes);
@@ -73,7 +76,7 @@ namespace CadSimulation.Application
             return result;
         }
 
-        public static string MapToCustomFormat(IEnumerable<IShape> shapes)
+        public string MapToCustomFormat(IEnumerable<IShape> shapes)
         {
             var sb = new StringBuilder();
             foreach (var shape in shapes)

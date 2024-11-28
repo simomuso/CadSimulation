@@ -1,17 +1,16 @@
 ﻿// See https://aka.ms/new-console-template for more information
+using CadSimulation.Application;
 using CadSimulation.Application.Models;
 using CadSimulation.Application.Repositories;
+using CadSimulation.Application.Serialization;
 using Newtonsoft.Json;
 
-//var options = ParseCommandLineArguments(args);
-var options = new ApplicationOptions
-{
-    ServiceUri = new Uri("http://localhost:8282")
-};
+var options = ParseCommandLineArguments(args);
 
 Console.WriteLine($"Running configuration: {JsonConvert.SerializeObject(options)}");
 
-var persistanceStrategy = new PersistanceStrategySelector().SelectStrategy(options);
+var repository = new RepositorySelector(new ShapeFormatMapper()).SelectRepository(options);
+
 var shapes = new List<IShape>();
 
 while (true)
@@ -83,10 +82,10 @@ while (true)
             }
             continue;
         case 'k':
-            await persistanceStrategy.ExecuteWriteAsync(shapes);
+            await repository.WriteAsync(shapes);
             continue;
         case 'w':
-            shapes = (await persistanceStrategy.ExecuteReadAsync()).ToList();
+            shapes = (await repository.ReadAsync()).ToList();
             continue;
     }
     shapes.Add(shape!);
