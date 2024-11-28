@@ -3,7 +3,7 @@ using CadSimulation.Application.Models.Json;
 
 namespace CadSimulation.Application.Visitors
 {
-    public class SerializableShapeConverter : ISerializableShapeVisitor
+    public class SerializableToShapeConverter : ISerializableShapeVisitor
     {
         public IShape ConvertedValue { get; private set; } = null!;
 

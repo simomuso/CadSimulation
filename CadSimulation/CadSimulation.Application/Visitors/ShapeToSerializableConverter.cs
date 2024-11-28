@@ -2,13 +2,13 @@
 using CadSimulation.Application.Models;
 using CadSimulation.Application.Models.Json;
 
-public class JsonShapeFormatter : IShapeVisitor
+public class ShapeToSerializableConverter : IShapeVisitor
 {
-    public ISerializableShape FormattedValue { get; private set; } = null!;
+    public ISerializableShape ConvertedValue { get; private set; } = null!;
 
     public void Visit(Circle circle)
     {
-        FormattedValue = new SerializableCircle
+        ConvertedValue = new SerializableCircle
         {
             Radius = circle.Radius
         };
@@ -16,7 +16,7 @@ public class JsonShapeFormatter : IShapeVisitor
 
     public void Visit(Rectangle rectangle)
     {
-        FormattedValue = new SerializableRectangle
+        ConvertedValue = new SerializableRectangle
         {
             Height = rectangle.Height,
             Width = rectangle.Width
@@ -25,7 +25,7 @@ public class JsonShapeFormatter : IShapeVisitor
 
     public void Visit(Triangle triangle)
     {
-        FormattedValue = new SerializableTriangle
+        ConvertedValue = new SerializableTriangle
         {
             Base = triangle.Base,
             Height = triangle.Height
@@ -34,7 +34,7 @@ public class JsonShapeFormatter : IShapeVisitor
 
     public void Visit(Square square)
     {
-        FormattedValue = new SerializableSquare
+        ConvertedValue = new SerializableSquare
         {
             Side = square.Side
         };

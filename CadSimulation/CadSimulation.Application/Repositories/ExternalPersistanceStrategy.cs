@@ -1,4 +1,9 @@
 ﻿using CadSimulation.Application.Models;
+using CadSimulation.Application.Models.Json;
+using CadSimulation.Application.Visitors;
+using Newtonsoft.Json;
+using System.Net.Http;
+using System.Text;
 
 namespace CadSimulation.Application.Repositories
 {
@@ -6,6 +11,7 @@ namespace CadSimulation.Application.Repositories
     {
         private readonly Uri _serviceUri;
         private readonly bool _useJsonFormat;
+        private readonly HttpClient _httpClient = new();
 
         public ExternalPersistanceStrategy(Uri serviceUri, bool useJsonFormat) 
         {
@@ -13,14 +19,27 @@ namespace CadSimulation.Application.Repositories
             _useJsonFormat = useJsonFormat;
         }
 
-        public Task<IEnumerable<IShape>> ExecuteReadAsync()
+        public async Task<IEnumerable<IShape>> ExecuteReadAsync()
         {
-            throw new NotImplementedException();
+            var httpResponse = await _httpClient.GetAsync(_serviceUri);
+            var respondeBody = await httpResponse.Content.ReadAsStringAsync();
+            if (_useJsonFormat)
+                return Mappers.MapFromJsonFormat(respondeBody);
+
+            return Mappers.MapFromCustomFormat(respondeBody);
         }
 
-        public Task ExecuteWriteAsync(IEnumerable<IShape> shapes)
+        public async Task ExecuteWriteAsync(IEnumerable<IShape> shapes)
         {
-            throw new NotImplementedException();
+            string contentToSend;
+
+            if (_useJsonFormat)
+                contentToSend = Mappers.MapToJsonFormat(shapes);
+            else
+                contentToSend = Mappers.MapToCustomFormat(shapes);
+
+            await _httpClient.PostAsync(_serviceUri, new StringContent(contentToSend));
+
         }
     }
 }

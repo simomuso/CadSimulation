@@ -1,4 +1,5 @@
 ﻿using CadSimulation.Application.Models;
+using System.Text;
 
 namespace CadSimulation.Application.Repositories
 {
@@ -13,49 +14,14 @@ namespace CadSimulation.Application.Repositories
 
         public async Task<IEnumerable<IShape>> ExecuteReadAsync()
         {
-            var shapes = new List<IShape>();
-
-            var lines = await File.ReadAllLinesAsync(_filePath);
-            foreach (var line in lines)
-            {
-                var lineItems = line.Split(' ');
-                switch (lineItems[0])
-                {
-                    case "S":
-                        var side = int.Parse(lineItems[1]);
-                        shapes.Add(new Square(side));
-                        break;
-                    case "R":
-                        var rWidth = int.Parse(lineItems[1]);
-                        var rHeight = int.Parse(lineItems[2]);
-                        shapes.Add(new Rectangle(rHeight, rWidth));
-                        break;
-                    case "T":
-                        var tBase = int.Parse(lineItems[1]);
-                        var tHeight = int.Parse(lineItems[2]);
-                        shapes.Add(new Triangle(tBase, tHeight));
-                        break;
-                    case "C":
-                        var radius = int.Parse(lineItems[1]);
-                        shapes.Add(new Circle(radius));
-                        break;
-                }
-            }
-
-            return shapes;
+            var fileContent = await File.ReadAllTextAsync(_filePath);
+            return Mappers.MapFromCustomFormat(fileContent);
         }
 
         public async Task ExecuteWriteAsync(IEnumerable<IShape> shapes)
         {
-            var lines = new List<string>();
-            foreach (var shape in shapes)
-            {
-                var formattedValueVisitor = new CustomShapeFormatter();
-                shape.Accept(formattedValueVisitor);
-                lines.Add(formattedValueVisitor.FormattedValue);
-            }
-
-            await File.WriteAllLinesAsync(_filePath, lines);
+            var contentToWrite = Mappers.MapToCustomFormat(shapes);
+            await File.WriteAllTextAsync(_filePath, contentToWrite);
         }
     }
 }

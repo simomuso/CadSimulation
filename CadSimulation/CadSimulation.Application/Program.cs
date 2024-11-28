@@ -3,7 +3,11 @@ using CadSimulation.Application.Models;
 using CadSimulation.Application.Repositories;
 using Newtonsoft.Json;
 
-var options = ParseCommandLineArguments(args);
+//var options = ParseCommandLineArguments(args);
+var options = new ApplicationOptions
+{
+    ServiceUri = new Uri("http://localhost:8282")
+};
 
 Console.WriteLine($"Running configuration: {JsonConvert.SerializeObject(options)}");
 
