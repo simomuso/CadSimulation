@@ -1,10 +1,10 @@
 ﻿// See https://aka.ms/new-console-template for more information
 namespace CadSimulation.Application.Models
 {
-    internal class Triangle : IShape
+    public class Triangle : IShape
     {
-        internal int Base { get; }
-        internal int Height { get; }
+        public int Base { get; }
+        public int Height { get; }
 
         public Triangle(int b, int h)
         {

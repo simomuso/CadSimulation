@@ -1,6 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
-internal class CommandLineArguments
+public class ApplicationOptions
 {
     public string FilesystemPath { get; set; } = null!;
-    public bool JsonFormatRequired { get; set; }
+    public Uri? ServiceUri { get; set; } = null!;
+    public bool UseJsonFormat { get; set; }
 }

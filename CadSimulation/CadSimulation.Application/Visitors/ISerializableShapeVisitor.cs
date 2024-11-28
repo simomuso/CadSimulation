@@ -1,7 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using CadSimulation.Application.Models.Json;
 
-internal interface ISerializableShapeVisitor
+public interface ISerializableShapeVisitor
 {
     void Visit(SerializableCircle circle);
     void Visit(SerializableRectangle rectangle);

@@ -1,14 +1,16 @@
 ﻿// See https://aka.ms/new-console-template for more information
+using CadSimulation.Application;
 using CadSimulation.Application.Models;
 using CadSimulation.Application.Repositories;
+using CadSimulation.Application.Serialization;
 using Newtonsoft.Json;
 
+var options = ParseCommandLineArguments(args);
 
-var arguments = ParseCommandLineArguments(args);
+Console.WriteLine($"Running configuration: {JsonConvert.SerializeObject(options)}");
 
-Console.WriteLine($"Running configuration: {JsonConvert.SerializeObject(arguments)}");
+var repository = new RepositorySelector(new ShapeFormatMapper()).SelectRepository(options);
 
-var shapesRepository = new ShapesRepositoryFactory().CreateShapesRepository(arguments.FilesystemPath, arguments.JsonFormatRequired);
 var shapes = new List<IShape>();
 
 while (true)
@@ -80,19 +82,19 @@ while (true)
             }
             continue;
         case 'k':
-            await shapesRepository.SaveAllAsync(shapes);
+            await repository.WriteAsync(shapes);
             continue;
         case 'w':
-            shapes = (await shapesRepository.GetAllAsync()).ToList();
+            shapes = (await repository.ReadAsync()).ToList();
             continue;
     }
     shapes.Add(shape!);
 
 }
 
-static CommandLineArguments ParseCommandLineArguments(string[] args)
+static ApplicationOptions ParseCommandLineArguments(string[] args)
 {
-    var commandLineArguments = new CommandLineArguments();
+    var commandLineArguments = new ApplicationOptions();
 
     for (int i = 0; i < args.Length; i++)
     {
@@ -103,7 +105,11 @@ static CommandLineArguments ParseCommandLineArguments(string[] args)
                     commandLineArguments.FilesystemPath = args[i + 1];
                 continue;
             case "--json":
-                commandLineArguments.JsonFormatRequired = true;
+                commandLineArguments.UseJsonFormat = true;
+                continue;
+            case "--uri":
+                if (i + 1 < args.Length)
+                    commandLineArguments.ServiceUri = new Uri(args[i + 1]);
                 continue;
         }
     }

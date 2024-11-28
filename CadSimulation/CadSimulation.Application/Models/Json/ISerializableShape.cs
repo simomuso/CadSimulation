@@ -2,7 +2,7 @@
 
 namespace CadSimulation.Application.Models.Json
 {
-    internal interface ISerializableShape
+    public interface ISerializableShape
     {
         [JsonPropertyName("Width")]
         string Type { get; }
