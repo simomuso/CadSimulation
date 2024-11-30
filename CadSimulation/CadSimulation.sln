@@ -1,9 +1,21 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35506.116 d17.12
+VisualStudioVersion = 17.12.35506.116
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadSimulation.Application", "CadSimulation.Application\CadSimulation.Application.csproj", "{476A829A-3D63-4704-97A7-F5022B9C5973}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadSimulation.Core", "CadSimulation.Core\CadSimulation.Core.csproj", "{11075B48-02EC-43BC-A1CE-2DA0E2E3F86C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Adapters", "Adapters", "{05D8A891-380B-4EB9-ABED-F4C3406D8D05}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "In", "In", "{7F3141FF-F49D-4997-ABCC-ECF185E03BFF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Out", "Out", "{B1CA068B-E1D6-4945-80FA-64BFA942367A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadSimulation.PersistenceAdapter", "CadSimulation.PersistenceAdapter\CadSimulation.PersistenceAdapter.csproj", "{9621E94D-AC2D-483C-84A2-6CD7FA68EDBE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadSimulation.ConsoleAdapter", "CadSimulation.ConsoleAdapter\CadSimulation.ConsoleAdapter.csproj", "{11A1C304-4D1D-4FE0-BD7D-2D6F98AAD2BD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,8 +27,26 @@ Global
 		{476A829A-3D63-4704-97A7-F5022B9C5973}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{476A829A-3D63-4704-97A7-F5022B9C5973}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{476A829A-3D63-4704-97A7-F5022B9C5973}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11075B48-02EC-43BC-A1CE-2DA0E2E3F86C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11075B48-02EC-43BC-A1CE-2DA0E2E3F86C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11075B48-02EC-43BC-A1CE-2DA0E2E3F86C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11075B48-02EC-43BC-A1CE-2DA0E2E3F86C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9621E94D-AC2D-483C-84A2-6CD7FA68EDBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9621E94D-AC2D-483C-84A2-6CD7FA68EDBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9621E94D-AC2D-483C-84A2-6CD7FA68EDBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9621E94D-AC2D-483C-84A2-6CD7FA68EDBE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11A1C304-4D1D-4FE0-BD7D-2D6F98AAD2BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11A1C304-4D1D-4FE0-BD7D-2D6F98AAD2BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11A1C304-4D1D-4FE0-BD7D-2D6F98AAD2BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11A1C304-4D1D-4FE0-BD7D-2D6F98AAD2BD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7F3141FF-F49D-4997-ABCC-ECF185E03BFF} = {05D8A891-380B-4EB9-ABED-F4C3406D8D05}
+		{B1CA068B-E1D6-4945-80FA-64BFA942367A} = {05D8A891-380B-4EB9-ABED-F4C3406D8D05}
+		{9621E94D-AC2D-483C-84A2-6CD7FA68EDBE} = {B1CA068B-E1D6-4945-80FA-64BFA942367A}
+		{11A1C304-4D1D-4FE0-BD7D-2D6F98AAD2BD} = {7F3141FF-F49D-4997-ABCC-ECF185E03BFF}
 	EndGlobalSection
 EndGlobal
