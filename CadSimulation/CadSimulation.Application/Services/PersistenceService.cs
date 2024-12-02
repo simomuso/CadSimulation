@@ -5,10 +5,10 @@ namespace CadSimulation.Application.Services
 {
     public class PersistenceService : IPersistenceService
     {
-        private readonly PersistenceServiceOptions _options;
+        private readonly IPersistenceServiceOptions _options;
         private readonly IShapeRepositoryFactory _shapesRepositoryFactory;
 
-        public PersistenceService(PersistenceServiceOptions options,
+        public PersistenceService(IPersistenceServiceOptions options,
             IShapeRepositoryFactory shapesRepositoryFactory)
         {
             _options = options;

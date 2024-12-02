@@ -2,15 +2,18 @@
 using CadSimulation.Application.Services;
 using CadSimulation.Core;
 using CadSimulation.Core.Models;
+using CadSimulation.Core.Ports;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
-var options = ParseCommandLineArguments(args);
+var serviceProvider = new ServiceCollection()
+    .AddScoped<IPersistenceServiceOptions>(r => { return ParseCommandLineArguments(args); })
+    .AddSingleton<IShapeMapperFactory, ShapeMapperFactory>()
+    .AddSingleton<IShapeRepositoryFactory, ShapeRepositoryFactory>()
+    .AddSingleton<IPersistenceService, PersistenceService>()
+    .BuildServiceProvider();
 
-Console.WriteLine($"Running configuration: {JsonConvert.SerializeObject(options)}");
-
-var mapperFactory = new ShapeMapperFactory();
-var repositoryFactory = new ShapeRepositoryFactory(mapperFactory);
-var repository = new PersistenceService(options, repositoryFactory);
+var persistenceService = serviceProvider.GetService<IPersistenceService>();
 
 var shapes = new List<IShape>();
 
@@ -83,17 +86,17 @@ while (true)
             }
             continue;
         case 'k':
-            await repository.WriteAsync(shapes);
+            await persistenceService?.WriteAsync(shapes);
             continue;
         case 'w':
-            shapes = (await repository.ReadAsync()).ToList();
+            shapes = (await persistenceService?.ReadAsync())?.ToList();
             continue;
     }
     shapes.Add(shape!);
 
 }
 
-static PersistenceServiceOptions ParseCommandLineArguments(string[] args)
+static IPersistenceServiceOptions ParseCommandLineArguments(string[] args)
 {
     var commandLineArguments = new PersistenceServiceOptions();
 
@@ -114,6 +117,6 @@ static PersistenceServiceOptions ParseCommandLineArguments(string[] args)
                 continue;
         }
     }
-
+    Console.WriteLine($"Running configuration: {JsonConvert.SerializeObject(commandLineArguments)}");
     return commandLineArguments;
 }
